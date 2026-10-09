@@ -1,0 +1,540 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Banking Support</title>
+  <style>
+    :root {
+      --primary: #2457d6;
+      --dark: #17233c;
+      --muted: #718096;
+      --bg: #f4f7fc;
+      --border: #e3e9f3;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+    }
+
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 18px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 19px;
+      font-weight: 750;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: white;
+      background: var(--primary);
+      font-size: 23px;
+    }
+
+    .status {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #e6a23c;
+    }
+
+    .dot.online { background: #19a66a; }
+    .dot.offline { background: #dc4545; }
+
+    main {
+      max-width: 1180px;
+      margin: 35px auto;
+      padding: 0 20px;
+    }
+
+    .intro { margin-bottom: 25px; }
+
+    .eyebrow {
+      color: var(--primary);
+      text-transform: uppercase;
+      font-weight: 750;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+    }
+
+    h1 {
+      font-size: clamp(27px, 4vw, 38px);
+      margin: 10px 0;
+      letter-spacing: -1px;
+    }
+
+    .intro p {
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 310px minmax(0, 1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(27, 48, 85, .04);
+    }
+
+    .panel-heading {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-heading h2 {
+      font-size: 16px;
+      margin: 0 0 6px;
+    }
+
+    .panel-heading p {
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .upload-area { padding: 20px; }
+
+    .dropzone {
+      border: 1.5px dashed #b7c8ed;
+      background: #f7f9ff;
+      border-radius: 13px;
+      padding: 25px 12px;
+      text-align: center;
+    }
+
+    .upload-icon { font-size: 32px; }
+
+    .dropzone p {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    input[type="file"] {
+      display: block;
+      width: 100%;
+      margin: 14px 0;
+      font-size: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 12px 15px;
+      font-weight: 650;
+      cursor: pointer;
+      font-size: 13px;
+      transition: opacity .2s;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .secondary {
+      background: #edf2ff;
+      color: var(--primary);
+    }
+
+    .full { width: 100%; }
+
+    .notice {
+      margin-top: 14px;
+      padding: 11px;
+      background: #f5f7fb;
+      border-radius: 9px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 550px;
+    }
+
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 17px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .assistant-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      background: #eaf0ff;
+      font-size: 19px;
+    }
+
+    #messages {
+      flex: 1;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      min-height: 330px;
+      max-height: 470px;
+      overflow-y: auto;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 13px 15px;
+      border-radius: 13px;
+      font-size: 13px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .bot {
+      align-self: flex-start;
+      background: #f0f4fb;
+      border: 1px solid #e7edf7;
+      border-bottom-left-radius: 4px;
+    }
+
+    .user {
+      align-self: flex-end;
+      color: white;
+      background: var(--primary);
+      border-bottom-right-radius: 4px;
+    }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 20px 15px;
+    }
+
+    .suggestions button {
+      background: white;
+      border: 1px solid var(--border);
+      color: #52627c;
+      font-size: 11px;
+      padding: 9px 11px;
+    }
+
+    .composer {
+      display: flex;
+      gap: 10px;
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      background: #fcfdff;
+    }
+
+    #question {
+      min-width: 0;
+      flex: 1;
+      border: 1px solid #dce4f0;
+      border-radius: 10px;
+      padding: 13px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    #question:focus {
+      border-color: var(--primary);
+    }
+
+    .disclaimer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 11px;
+      padding: 0 20px 16px;
+    }
+
+    footer {
+      text-align: center;
+      color: #8a96aa;
+      font-size: 12px;
+      padding: 28px 10px;
+    }
+
+    @media (max-width: 760px) {
+      header { padding: 14px 18px; }
+      main { margin: 24px auto; padding: 0 13px; }
+      .layout { grid-template-columns: 1fr; }
+      .chat-panel { min-height: 520px; }
+      #messages { max-height: 400px; }
+      .status { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">⌂</div>
+      <span>BankAssist AI</span>
+    </div>
+    <div class="status">
+      <span class="dot" id="statusDot"></span>
+      <span id="statusText">Checking service...</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="eyebrow">AI-powered customer support</div>
+      <h1>Your banking questions, answered.</h1>
+      <p>Get help with banking FAQs, upload reference documents, and chat with your AI banking assistant.</p>
+    </section>
+
+    <div class="layout">
+      <aside class="panel">
+        <div class="panel-heading">
+          <h2>Knowledge base</h2>
+          <p>Upload a PDF or TXT document to provide reference material to the assistant.</p>
+        </div>
+
+        <div class="upload-area">
+          <div class="dropzone">
+            <div class="upload-icon">📄</div>
+            <strong style="font-size:14px">Upload a document</strong>
+            <p>Choose a PDF or text file from your device.</p>
+            <input id="fileInput" type="file" accept=".pdf,.txt,application/pdf,text/plain">
+            <button class="primary full" id="uploadButton" onclick="uploadDocument()">Upload document</button>
+          </div>
+          <div class="notice" id="uploadStatus">
+            No document uploaded during this session.
+          </div>
+          <div class="notice">
+            <strong>Tip:</strong> Ask clear questions about the banking information you need.
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel chat-panel">
+        <div class="chat-header">
+          <div class="assistant-name">
+            <div class="avatar">🤖</div>
+            <div>
+              Banking Assistant
+              <div style="font-size:11px;color:#8190a7;font-weight:400;margin-top:4px">AI customer support</div>
+            </div>
+          </div>
+          <button class="secondary" onclick="clearChat()">New chat</button>
+        </div>
+
+        <div id="messages" aria-live="polite">
+          <div class="message bot">Hello! 👋 I'm your AI banking assistant. Ask me a banking question to get started. You can also upload a PDF or TXT document using the panel on the left.</div>
+        </div>
+
+        <div class="suggestions">
+          <button onclick="useSuggestion('What banking services can you help me with?')">Banking services</button>
+          <button onclick="useSuggestion('How can I protect my bank account?')">Account security</button>
+          <button onclick="useSuggestion('How do I report a lost or stolen card?')">Lost card</button>
+        </div>
+
+        <form class="composer" id="chatForm">
+          <input id="question" type="text" placeholder="Ask your banking question..." autocomplete="off" required>
+          <button class="primary" id="sendButton" type="submit">Send ➤</button>
+        </form>
+        <div class="disclaimer">Do not enter passwords, PINs, OTPs, or sensitive account details.</div>
+      </section>
+    </div>
+  </main>
+
+  <footer>BankAssist AI · AI Banking Support Chatbot</footer>
+
+  <script>
+    const messages = document.getElementById("messages");
+    const questionInput = document.getElementById("question");
+    const sendButton = document.getElementById("sendButton");
+    const uploadButton = document.getElementById("uploadButton");
+
+    let sessionId = localStorage.getItem("bankassist_session_id");
+    if (!sessionId) {
+      sessionId = "session-" + Date.now() + "-" + Math.random().toString(36).slice(2, 9);
+      localStorage.setItem("bankassist_session_id", sessionId);
+    }
+
+    function addMessage(text, type) {
+      const element = document.createElement("div");
+      element.className = "message " + type;
+      element.textContent = text;
+      messages.appendChild(element);
+      messages.scrollTop = messages.scrollHeight;
+      return element;
+    }
+
+    async function readResponse(response) {
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const detail = data.detail || data.message || "Request failed (" + response.status + ").";
+        throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
+      }
+      return data;
+    }
+
+    async function checkStatus() {
+      const dot = document.getElementById("statusDot");
+      const label = document.getElementById("statusText");
+
+      try {
+        const response = await fetch("/api/status");
+        if (!response.ok) throw new Error("Service unavailable");
+        await response.json();
+        dot.className = "dot online";
+        label.textContent = "Service online";
+      } catch (error) {
+        dot.className = "dot offline";
+        label.textContent = "Service unavailable";
+      }
+    }
+
+    async function uploadDocument() {
+      const fileInput = document.getElementById("fileInput");
+      const status = document.getElementById("uploadStatus");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        status.textContent = "Please select a PDF or TXT file first.";
+        return;
+      }
+
+      const extension = file.name.split(".").pop().toLowerCase();
+      if (!["pdf", "txt"].includes(extension)) {
+        status.textContent = "Only PDF and TXT files are supported.";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      uploadButton.disabled = true;
+      uploadButton.textContent = "Uploading...";
+
+      try {
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData
+        });
+        const data = await readResponse(response);
+        status.textContent = "Uploaded: " + file.name + ". " +
+          (data.message || data.status || "The server processed your document.");
+        addMessage("Document uploaded: " + file.name +
+          "\nYou can now ask questions about your reference material.", "bot");
+      } catch (error) {
+        status.textContent = "Upload failed: " + error.message;
+      } finally {
+        uploadButton.disabled = false;
+        uploadButton.textContent = "Upload document";
+      }
+    }
+
+    document.getElementById("chatForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const question = questionInput.value.trim();
+      if (!question) return;
+
+      addMessage(question, "user");
+      questionInput.value = "";
+      sendButton.disabled = true;
+      sendButton.textContent = "Sending...";
+
+      const typing = addMessage("Thinking...", "bot");
+
+      try {
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question: question,
+            session_id: sessionId
+          })
+        });
+
+        const data = await readResponse(response);
+        typing.remove();
+
+        const answer = data.answer || data.response || data.message ||
+          "The server responded, but did not return an answer.";
+        addMessage(typeof answer === "string" ? answer : JSON.stringify(answer), "bot");
+      } catch (error) {
+        typing.textContent = "Sorry, I couldn't get a response. " + error.message;
+      } finally {
+        sendButton.disabled = false;
+        sendButton.textContent = "Send ➤";
+        questionInput.focus();
+      }
+    });
+
+    function useSuggestion(text) {
+      questionInput.value = text;
+      questionInput.focus();
+    }
+
+    function clearChat() {
+      messages.replaceChildren();
+      addMessage("New conversation started. How can I help you with your banking question?", "bot");
+      sessionId = "session-" + Date.now() + "-" + Math.random().toString(36).slice(2, 9);
+      localStorage.setItem("bankassist_session_id", sessionId);
+    }
+
+    checkStatus();
+  </script>
+</body>
+</html>
